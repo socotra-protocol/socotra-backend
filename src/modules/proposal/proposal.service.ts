@@ -7,5 +7,6 @@ import { FindManyOptions, FindOneOptions, ObjectID, Repository } from 'typeorm';
 
 @Injectable()
 export class ProposalService {
+  // check if domain is in db, if proposal ended -> call relayer
   async analyze(dto) {}
 }
