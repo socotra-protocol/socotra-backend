@@ -10,8 +10,8 @@ import {
 
 @Entity()
 export class Proposal {
-  @Column()
-  proposalId?: string;
+  @PrimaryColumn()
+  subProposalId?: string;
 
   @Column()
   mainProposalId?: string;

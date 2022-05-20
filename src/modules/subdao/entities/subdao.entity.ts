@@ -17,8 +17,11 @@ export class SubDao {
   domain?: string;
 
   @Column()
-  contractAddress: string;
+  managerAddress: string;
 
   @Column()
-  tokenAddress: string;
+  mainTokenAddress: string;
+
+  @Column()
+  subTokenAddress: string;
 }
