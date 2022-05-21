@@ -3,40 +3,30 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ProposalDataDto } from './dto/proposal.dto';
+import { Subdao } from './entities/subdao.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOneOptions, getConnection, Repository } from 'typeorm';
 
 @Injectable()
 export class SubdaoService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    @InjectRepository(Subdao)
+    private readonly subdaoRepository: Repository<Subdao>,
   ) {}
 
-  // validate if subdao can use the given main proposal
-  async validateMainProposal(proposalLink: string) {
-    // https://snapshot.org/#/ens.eth/proposal/0x104eb11d42813fadc2b408856e8fa2c10e34dbb4a87abaa2f089ece124263f16
-    const proposalId = proposalLink.split('/')[6];
-    const query = `{\n  proposal(id: "${proposalId}") {\n strategies{name, params}\n }\n}\n`;
+  async findOne(options?: FindOneOptions<Subdao>) {
+    return this.subdaoRepository.findOne(options);
+  }
 
-    const response = await firstValueFrom(
-      this.httpService.post(
-        this.configService.get<string>('graphUrl.snapshot'),
-        {
-          query,
-          variables: null,
-        },
-      ),
-    );
-
-    const proposalData: ProposalDataDto = response.data.data.proposal;
-    // check if data exist
-    if (!proposalData) return false;
-
-    // get main proposal's vote token address
-    let mainTokenAddress;
-    for (const strategy of proposalData.strategies) {
-      if (strategy.name == 'erc20-balance-of') {
-        mainTokenAddress = strategy.params.address.toLowerCase();
-      }
-    }
+  async upsert(subdao: Subdao) {
+    return await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Subdao)
+      .values(subdao)
+      .orUpdate(['domain', 'voteProxyAddress'], ['managerAddress']) //If channel exists we update its info.
+      .execute();
   }
 }
