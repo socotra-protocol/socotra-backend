@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique('id', ['managerAddress'])
+@Unique(['managerAddress'])
 export class Subdao {
   @PrimaryGeneratedColumn('uuid')
   id?: string;

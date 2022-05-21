@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique('id', ['memberAddress', 'subdaoId'])
+@Unique(['memberAddress', 'subdaoId'])
 export class Member {
   @PrimaryGeneratedColumn('uuid')
   id?: string;

@@ -3,13 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  FindManyOptions,
-  FindOneOptions,
-  getConnection,
-  ObjectID,
-  Repository,
-} from 'typeorm';
+import { FindOneOptions, getConnection, Repository } from 'typeorm';
 import { SubdaoService } from '../subdao/subdao.service';
 import { Proposal } from './entities/proposal.entity';
 import { ProposalDataDto } from './dto/proposal.dto';
@@ -19,9 +13,9 @@ export class ProposalService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-    private readonly subdaoService: SubdaoService,
     @InjectRepository(Proposal)
     private readonly proposalRepository: Repository<Proposal>,
+    private readonly subdaoService: SubdaoService,
   ) {}
 
   async upsert(proposal: Proposal) {
