@@ -147,6 +147,8 @@ export class RelayerService {
     subProposalId: string,
     subDomain: string,
     managerAddress: string,
+    type: string,
+    target: string,
   ) {
     // query sub proposal from db
 
@@ -156,16 +158,36 @@ export class RelayerService {
     console.log(client);
 
     const mainDomain = await this.getDomain(mainProposalId);
-    const winner = this.getWinner(subProposalId, subDomain);
-    const snapshotVoteProxy = await this.getVoteProxy(managerAddress);
-    const receipt = await client.vote(this.relayerClient, snapshotVoteProxy, {
-      space: mainDomain,
-      proposal: mainProposalId,
-      type: 'single-choice',
-      choice: +winner,
-      metadata: JSON.stringify({}),
-    });
-    console.log('receipt', receipt);
+    const winner = await this.getWinner(subProposalId, subDomain);
+    const voter = await this.getVoteProxy(managerAddress);
+    if (type === 'submitVote') {
+      const tx = await this.submitVote(
+        voter,
+        target,
+        mainProposalId,
+        winner == '2',
+      );
+
+      return tx;
+    } else if (type === 'bravoVote') {
+      const tx = await this.bravoVote(
+        voter,
+        target,
+        mainProposalId,
+        Number(winner),
+      );
+      return tx;
+    } else {
+      const receipt = await client.vote(this.relayerClient, voter, {
+        space: mainDomain,
+        proposal: mainProposalId,
+        type: 'single-choice',
+        choice: +winner,
+        metadata: JSON.stringify({}),
+      });
+      console.log('receipt', receipt);
+      return receipt;
+    }
   }
 
   async submitVote(
@@ -179,7 +201,7 @@ export class RelayerService {
       VoterABI,
       this.relayerClient,
     ) as VoterAbi;
-    await contract.submitVote(governor, proposalId, support);
+    return await contract.submitVote(governor, proposalId, support);
   }
 
   async bravoVote(
@@ -193,6 +215,6 @@ export class RelayerService {
       VoterABI,
       this.relayerClient,
     ) as VoterAbi;
-    await contract.bravoCastVote(governor, proposalId, support);
+    return await contract.bravoCastVote(governor, proposalId, support);
   }
 }

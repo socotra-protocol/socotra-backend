@@ -31,7 +31,10 @@ export class WebhookService {
         proposal.subProposalId,
         domain,
         proposal.managerAddress,
+        proposal.target,
+        proposal.type,
       );
+      console.log(result);
     }
   }
 }
