@@ -7,10 +7,11 @@ import { ProposalService } from './proposal.service';
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
-  @Get()
+  @Get(':managerAddr')
   async getProposalByAddress(
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
+    console.log('getProposalByAddress', managerAddr);
     const response = await this.proposalService.findOne({
       where: {
         managerAddress: managerAddr.toLocaleLowerCase(),

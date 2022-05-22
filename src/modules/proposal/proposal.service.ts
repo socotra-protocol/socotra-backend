@@ -29,7 +29,10 @@ export class ProposalService {
       .insert()
       .into(Proposal)
       .values(proposal)
-      .orUpdate(['state'], ['subProposalId', 'mainProposalId']) //If proposal exists we update its info.
+      .orUpdate(
+        ['status', 'type', 'target'],
+        ['managerAddress', 'subProposalId', 'mainProposalId'],
+      ) //If proposal exists we update its info.
       .execute();
   }
 

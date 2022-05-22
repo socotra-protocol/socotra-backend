@@ -1,18 +1,35 @@
 import { Subdao } from 'src/modules/subdao/entities/subdao.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity()
+@Unique('id', ['mainProposalId', 'subProposalId', 'managerAddress'])
 export class Proposal {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
+
+  @Column()
   subProposalId?: string;
 
   @Column()
   mainProposalId?: string;
 
-  @ManyToOne(() => Subdao, (subdao) => subdao.proposals)
-  @JoinColumn({ name: 'subdaoId', referencedColumnName: 'id' })
-  subdao?: Subdao;
-
   @Column()
   managerAddress: string;
+
+  @Column({ nullable: true })
+  status?: string;
+
+  @Column({ nullable: true })
+  type?: string;
+
+  @Column({ nullable: true })
+  target?: string;
 }
