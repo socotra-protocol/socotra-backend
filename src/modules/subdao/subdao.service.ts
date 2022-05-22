@@ -5,7 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { ProposalDataDto } from './dto/proposal.dto';
 import { Subdao } from './entities/subdao.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, getConnection, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  getConnection,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class SubdaoService {
@@ -18,6 +23,10 @@ export class SubdaoService {
 
   async findOne(options?: FindOneOptions<Subdao>) {
     return this.subdaoRepository.findOne(options);
+  }
+
+  async findAll(options?: FindManyOptions<Subdao>) {
+    return this.subdaoRepository.find(options);
   }
 
   async upsert(subdao: Subdao) {

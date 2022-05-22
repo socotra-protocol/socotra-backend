@@ -11,7 +11,7 @@ export class ProposalController {
   async getProposalByAddress(
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
-    const response = await this.proposalService.findOne({
+    const response = await this.proposalService.findAll({
       where: {
         managerAddress: managerAddr,
       },

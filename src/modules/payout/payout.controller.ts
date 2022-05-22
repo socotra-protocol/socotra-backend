@@ -17,7 +17,7 @@ export class PayoutController {
     @Param('subdaoId') subdaoId: string,
     @Param('memberAddr') memberAddr: string,
   ): Promise<any> {
-    const response = await this.payoutService.findOne({
+    const response = await this.payoutService.findAll({
       where: {
         memberId: memberAddr,
         subdaoId: subdaoId,

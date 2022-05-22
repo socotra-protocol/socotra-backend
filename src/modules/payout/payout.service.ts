@@ -3,7 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Payout } from './entities/payout.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, getConnection, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  getConnection,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class PayoutService {
@@ -18,13 +23,17 @@ export class PayoutService {
     return this.payoutRepository.findOne(options);
   }
 
+  async findAll(options?: FindManyOptions<Payout>) {
+    return this.payoutRepository.find(options);
+  }
+
   async upsert(payout: Payout) {
     return await getConnection()
       .createQueryBuilder()
       .insert()
       .into(Payout)
       .values(payout)
-      .orUpdate(['state'], ['id']) //If proposal exists we update its info.
+      .orUpdate(['state'], ['payoutId', 'memberAddress', 'subdaoId']) //If proposal exists we update its info.
       .execute();
   }
 }

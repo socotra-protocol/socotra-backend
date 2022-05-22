@@ -3,7 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, getConnection, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  getConnection,
+  Repository,
+} from 'typeorm';
 import { SubdaoService } from '../subdao/subdao.service';
 import { Proposal } from './entities/proposal.entity';
 import { ProposalDataDto } from './dto/proposal.dto';
@@ -30,6 +35,9 @@ export class ProposalService {
 
   async findOne(options?: FindOneOptions<Proposal>) {
     return this.proposalRepository.findOne(options);
+  }
+  async findAll(options?: FindManyOptions<Proposal>) {
+    return this.proposalRepository.find(options);
   }
 
   // validate if subdao can use the given main proposal

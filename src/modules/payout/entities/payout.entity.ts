@@ -1,11 +1,23 @@
 import { Member } from 'src/modules/member/entities/member.entity';
 import { Subdao } from 'src/modules/subdao/entities/subdao.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity()
+@Unique('id', ['payoutId', 'subdaoId', 'memberAddress'])
 export class Payout {
-  @PrimaryColumn()
-  id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
+
+  @Column()
+  payoutId: string;
 
   @Column()
   memberAddress: string;

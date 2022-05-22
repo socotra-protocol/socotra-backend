@@ -10,7 +10,7 @@ export class SubdaoController {
   async getSubdaoByAddress(
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
-    const response = await this.subdaoService.findOne({
+    const response = await this.subdaoService.findAll({
       where: {
         managerAddress: managerAddr,
       },
