@@ -10,12 +10,13 @@ import { MemberModule } from './modules/member/member.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dbConfig } from './configs/database.config';
 import { graphConfig } from './configs/graph.config';
+import { relayerConfig } from './configs/relayer.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: false,
-      load: [dbConfig, graphConfig],
+      load: [dbConfig, graphConfig, relayerConfig],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
