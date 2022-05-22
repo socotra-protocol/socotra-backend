@@ -9,5 +9,6 @@ import { SubdaoModule } from '../subdao/subdao.module';
   imports: [ProposalModule, RelayerModule, SubdaoModule],
   providers: [WebhookService],
   controllers: [WebhookController],
+  exports: [WebhookService],
 })
 export class WebhookModule {}

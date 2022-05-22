@@ -28,6 +28,8 @@ export class WebhookService {
       });
       const result = await this.relayerService.relayVote(
         proposal.mainProposalId,
+        proposal.subProposalId,
+        domain,
       );
     }
   }
