@@ -1,0 +1,29 @@
+steps:
+  # Build and push the container image
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      [
+        '--dockerfile',
+        './Dockerfile',
+        '--destination',
+        'gcr.io/$PROJECT_ID/socotra-backend',
+        '--cache',
+      ]
+    id: 'build'
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      [
+        'run',
+        'deploy',
+        'socotra-backend',
+        '--image',
+        'gcr.io/$PROJECT_ID/socotra-backend',
+        '--region',
+        'asia-southeast1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+      ]
+    waitFor: ['build']
