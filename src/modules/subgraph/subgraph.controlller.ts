@@ -18,4 +18,11 @@ export class SubgraphController {
 
     return await this.subgraphService.writeYaml();
   }
+
+  @Get('/gen-and-deploy')
+  async genAndDepoly() {
+    console.info('deploying subgraph');
+
+    return await this.subgraphService.deploySubgraph();
+  }
 }
