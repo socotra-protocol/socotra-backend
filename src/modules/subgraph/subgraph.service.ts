@@ -130,16 +130,23 @@ export class SubgraphService {
   }
 
   async deploySubgraph() {
-    exec('cd ../socotra-subgraph; graph build', (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    });
+    // await spawnSync(
+    //   'cd ../socotra-subgraph ; ls ;graph auth --product hosted-service e34781eb3356464faf8769034aae59b5; graph deploy',
+    // );
+
+    await exec(
+      'cd ../socotra-subgraph ; ls ;graph auth --product hosted-service e34781eb3356464faf8769034aae59b5; yarn deploy',
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+      },
+    );
   }
 }
