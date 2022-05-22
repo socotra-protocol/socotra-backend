@@ -3,15 +3,20 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import snapshot from '@snapshot-labs/snapshot.js';
-import { Wallet } from 'ethers';
-import { ethers } from 'ethers';
+import SocotraBranchManagerABI from '../../abis/SocotraBranchManager.json';
+import VoterABI from '../../abis/Voterabi.json';
+import { ethers, Wallet } from 'ethers';
+import { VoterAbi } from 'types/ethers-contracts/VoterAbi';
 
 @Injectable()
 export class RelayerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-  ) {}
+    private readonly relayerClient: any,
+  ) {
+    this.relayerClient = new Wallet(configService.get('relayer.privatekey'));
+  }
 
   async getBlockNumber() {
     const provider = ethers.getDefaultProvider('rinkeby');
@@ -118,23 +123,42 @@ export class RelayerService {
     return winner;
   }
 
+  async getVoteProxy(managerAddress: string): Promise<string> {
+    const url =
+      'https://api.thegraph.com/subgraphs/name/poomch/socotra-protocol';
+    const query = `{\n  branch(id: "${managerAddress}") {\n snapshotVoteProxy\n }\n}\n`;
+
+    const response = await firstValueFrom(
+      this.httpService.post(
+        this.configService.get<string>('graphUrl.snapshot'),
+        {
+          query,
+          variables: null,
+        },
+      ),
+    );
+
+    return response.data.data.branch.snapshotVoteProxy;
+  }
+
   // relay subdao members vote results to main proposal
   async relayVote(
     mainProposalId: string,
     subProposalId: string,
     subDomain: string,
+    managerAddress: string,
   ) {
     // query sub proposal from db
 
     // vote on main proposal based on sub proposal's result
     const hub = 'https://hub.snapshot.org'; // or https://testnet.snapshot.org for testnet
     const client = new snapshot.Client712(hub);
-    const wallet = new Wallet('');
     console.log(client);
 
     const mainDomain = await this.getDomain(mainProposalId);
     const winner = this.getWinner(subProposalId, subDomain);
-    const receipt = await client.vote(wallet, wallet.address, {
+    const snapshotVoteProxy = await this.getVoteProxy(managerAddress);
+    const receipt = await client.vote(this.relayerClient, snapshotVoteProxy, {
       space: mainDomain,
       proposal: mainProposalId,
       type: 'single-choice',
@@ -142,5 +166,33 @@ export class RelayerService {
       metadata: JSON.stringify({}),
     });
     console.log('receipt', receipt);
+  }
+
+  async submitVote(
+    voterAddress: string,
+    governor: string,
+    proposalId: string,
+    support: boolean,
+  ) {
+    const contract = new ethers.Contract(
+      voterAddress,
+      VoterABI,
+      this.relayerClient,
+    ) as VoterAbi;
+    await contract.submitVote(governor, proposalId, support);
+  }
+
+  async bravoVote(
+    voterAddress: string,
+    governor: string,
+    proposalId: string,
+    support: number,
+  ) {
+    const contract = new ethers.Contract(
+      voterAddress,
+      VoterABI,
+      this.relayerClient,
+    ) as VoterAbi;
+    await contract.bravoCastVote(governor, proposalId, support);
   }
 }

@@ -30,6 +30,7 @@ export class WebhookService {
         proposal.mainProposalId,
         proposal.subProposalId,
         domain,
+        proposal.managerAddress,
       );
     }
   }
