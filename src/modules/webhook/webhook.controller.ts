@@ -12,7 +12,7 @@ export class WebhookController {
   @Post('/snapshot')
   async snapshotHookMessage(@Body() body, @Res() res) {
     console.info('incoming snapshot webhook');
-    const data = await this.proposalService.analyze(body);
-    return res.status(200).json(data);
+    // const data = await this.proposalService.analyze(body);
+    return res.status(200);
   }
 }

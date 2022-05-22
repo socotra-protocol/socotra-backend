@@ -8,4 +8,4 @@ import { HttpModule } from '@nestjs/axios';
   imports: [ConfigModule, HttpModule],
   providers: [RelayerService],
 })
-export class SubdaoModule {}
+export class RelayerModule {}
