@@ -6,16 +6,16 @@ export class SubgraphController {
   constructor(private readonly subgraphService: SubgraphService) {}
 
   @Get()
-  async readyYaml(@Res() res) {
+  async readyYaml() {
     console.info('reading yaml');
-    await this.subgraphService.readYaml();
-    return res.status(200);
+
+    return await this.subgraphService.readYaml();
   }
 
   @Get('/write')
-  async writeYaml(@Res() res) {
+  async writeYaml() {
     console.info('writing yaml');
-    await this.subgraphService.writeYaml();
-    return res.status(200);
+
+    return await this.subgraphService.writeYaml();
   }
 }

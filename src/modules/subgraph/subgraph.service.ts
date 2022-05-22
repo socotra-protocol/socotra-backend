@@ -23,10 +23,10 @@ export class SubgraphService {
   ) {}
 
   async readYaml() {
-    console.log('path: ', path.resolve(__dirname, 'subgraph.yaml'));
+    // console.log('path: ', path.resolve(__dirname, '../../../../'));
     const doc = JSON.stringify(
       yaml.load(
-        await fs.readFileSync(path.resolve(__dirname, 'subgraph.yaml'), 'utf8'),
+        await fs.readFileSync('../socotra-subgraph/subgraph.yaml', 'utf8'),
       ),
     );
     console.log(doc);
@@ -120,7 +120,11 @@ export class SubgraphService {
 
     const yamlStr = yaml.dump(data);
 
-    await createFile(path.resolve(__dirname), 'subgraph.yaml', yamlStr);
+    await fs.writeFileSync(
+      '../socotra-subgraph/subgraph.yaml',
+      yamlStr,
+      'utf8',
+    );
 
     return true;
   }
