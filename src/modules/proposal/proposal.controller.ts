@@ -7,7 +7,7 @@ import { ProposalService } from './proposal.service';
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
-  @Get()
+  @Get(':managerAddr')
   async getProposalByAddress(
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
