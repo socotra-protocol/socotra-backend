@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-
+import { firstValueFrom } from 'rxjs';
 import snapshot from '@snapshot-labs/snapshot.js';
 import { Wallet } from 'ethers';
 
@@ -12,8 +12,42 @@ export class RelayerService {
     private readonly httpService: HttpService,
   ) {}
 
+  async getDomain(proposalId: string): Promise<string> {
+    const query = `{\n  proposal(id: "${proposalId}") {\n space{id}\n }\n}\n`;
+
+    const response = await firstValueFrom(
+      this.httpService.post(
+        this.configService.get<string>('graphUrl.snapshot'),
+        {
+          query,
+          variables: null,
+        },
+      ),
+    );
+
+    const proposalData = response.data.data.proposal;
+    const domain: string = proposalData.space.id;
+    return domain;
+  }
+
+  async getWinner(proposalId) {
+    const data = {
+      operationName: 'Votes',
+      variables: {
+        id: proposalId,
+        orderBy: 'vp',
+        orderDirection: 'desc',
+        first: 30000,
+        voter: '',
+        skip: 0,
+      },
+      query:
+        'query Votes($id: String!, $first: Int, $skip: Int, $orderBy: String, $orderDirection: OrderDirection, $voter: String) {\n  votes(\n    first: $first\n    skip: $skip\n    where: {proposal: $id, vp_gt: 0, voter: $voter}\n    orderBy: $orderBy\n    orderDirection: $orderDirection\n  ) {\n    ipfs\n    voter\n    choice\n    vp\n    vp_by_strategy\n  }\n}',
+    };
+  }
+
   // relay subdao members vote results to main proposal
-  async relayVote(proposalId: string) {
+  async relayVote(mainProposalId: string) {
     // query sub proposal from db
 
     // vote on main proposal based on sub proposal's result
@@ -22,10 +56,11 @@ export class RelayerService {
     const wallet = new Wallet('');
     console.log(client);
 
+    const mainDomain = await this.getDomain(mainProposalId);
+
     const receipt = await client.vote(wallet, wallet.address, {
-      space: 'zunnoon.eth',
-      proposal:
-        '0xdd58ba33b3b4bcfc4f3db4d660c8a9622f9f4e77d92288155503afe45209d140',
+      space: mainDomain,
+      proposal: mainProposalId,
       type: 'single-choice',
       choice: 1,
       metadata: JSON.stringify({}),
