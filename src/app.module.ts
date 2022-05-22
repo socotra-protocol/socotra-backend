@@ -10,6 +10,7 @@ import { MemberModule } from './modules/member/member.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dbConfig } from './configs/database.config';
 import { graphConfig } from './configs/graph.config';
+import { SubgraphModule } from './modules/subgraph/subgraph.module';
 
 @Module({
   imports: [
@@ -38,8 +39,8 @@ import { graphConfig } from './configs/graph.config';
         },
       }),
     }),
-
     ProposalModule,
+    SubgraphModule,
     PayoutModule,
     MemberModule,
     WebhookModule,
