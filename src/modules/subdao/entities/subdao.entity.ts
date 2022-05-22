@@ -1,4 +1,5 @@
 import { Member } from 'src/modules/member/entities/member.entity';
+import { Proposal } from 'src/modules/proposal/entities/proposal.entity';
 import {
   Column,
   Entity,
@@ -33,4 +34,10 @@ export class Subdao {
     nullable: true,
   })
   members?: Member[];
+
+  @OneToMany(() => Proposal, (proposal) => proposal.subdao, {
+    cascade: true,
+    nullable: true,
+  })
+  proposals?: Proposal[];
 }

@@ -6,13 +6,14 @@ import { SubdaoService } from './subdao.service';
 export class SubdaoController {
   constructor(private readonly subdaoService: SubdaoService) {}
 
-  @Get()
+  @Get(':managerAddr')
   async getSubdaoByAddress(
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
-    const response = await this.subdaoService.findAll({
+    console.log('managerAddr', managerAddr);
+    const response = await this.subdaoService.findOne({
       where: {
-        managerAddress: managerAddr,
+        managerAddress: managerAddr.toLocaleLowerCase(),
       },
     });
     return response;
