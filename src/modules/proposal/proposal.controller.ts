@@ -12,7 +12,7 @@ export class ProposalController {
     @Param('managerAddr') managerAddr: string,
   ): Promise<any> {
     console.log('getProposalByAddress', managerAddr);
-    const response = await this.proposalService.findOne({
+    const response = await this.proposalService.findAll({
       where: {
         managerAddress: managerAddr.toLocaleLowerCase(),
       },
