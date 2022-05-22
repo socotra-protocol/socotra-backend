@@ -29,7 +29,10 @@ export class ProposalService {
       .insert()
       .into(Proposal)
       .values(proposal)
-      .orUpdate(['subProposalId', 'mainProposalId'], ['managerAddress']) //If proposal exists we update its info.
+      .orUpdate(
+        ['status', 'type', 'target'],
+        ['managerAddress', 'subProposalId', 'mainProposalId'],
+      ) //If proposal exists we update its info.
       .execute();
   }
 
@@ -43,7 +46,8 @@ export class ProposalService {
   // validate if subdao can use the given main proposal
   async validateMainProposal(url: string, subdaoId: string) {
     // https://snapshot.org/#/ens.eth/proposal/0x104eb11d42813fadc2b408856e8fa2c10e34dbb4a87abaa2f089ece124263f16
-    const proposalId = url.split('/')[6];
+    const arr = url.split('/');
+    const proposalId = arr[arr.length - 1];
     const query = `{\n  proposal(id: "${proposalId}") {\n strategies{name, params}\n }\n}\n`;
 
     const response = await firstValueFrom(
